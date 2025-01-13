@@ -5,18 +5,17 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/userModel");
 const Event = require("../models/eventModel");
 
-
-
 // Middleware for authenticating and authorizing users
 const authenticate = (roles = []) => {
     return (req, res, next) => {
-        const token = req.headers.authorization?.split(" ")[1];
-        if (!token) {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json({ msg: "Authentication required" });
         }
 
+        const token = authHeader.split(" ")[1];
         try {
-            const decoded = jwt.verify(token, JWT_SECRET);
+            const decoded = jwt.verify(token, "your_jwt_secret");
             req.user = decoded;
 
             // Check role authorization
@@ -31,7 +30,6 @@ const authenticate = (roles = []) => {
     };
 };
 
-
-module.exports ={
-    authenticate
-}
+module.exports = {
+  authenticate,
+};
